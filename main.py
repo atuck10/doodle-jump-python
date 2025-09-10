@@ -75,6 +75,7 @@ def Menu():
   MenuButtons()
 
 def MenuButtons():
+  # test
   PlayButton.draw()
   if pygame.mouse.get_pressed()[0]:
     MousePos = pygame.mouse.get_pos()
