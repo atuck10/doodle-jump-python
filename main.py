@@ -1,5 +1,6 @@
 import pygame
 import random
+from enum import Enum
 
 pygame.init()
 
@@ -15,11 +16,18 @@ background_image= pygame.transform.scale(background_image, (screen_width, screen
 rightavatar = pygame.image.load("Assets/avatarright.png")
 rightavatar= pygame.transform.scale(rightavatar, (AVATAR_WIDTH, AVATAR_HEIGHT))
 Clock = pygame.time.Clock()
+title_font = pygame.font.Font("Assets/DoodleJump.ttf", 60)
 FPS = 60
 BOUNCE = -1
 GRAV = 0.981
 START_JUMP_HEIGHT = 300
 
+class GameStage(Enum):
+  Menu = 1
+  Play = 2
+  Results = 3
+
+Mode = GameStage.Menu
 
 class character():
   def __init__(self, image, x, y):
@@ -67,23 +75,30 @@ class block():
 
 avatar = character(rightavatar, screen_width/2 - (AVATAR_WIDTH/2), screen_height-START_JUMP_HEIGHT)
 
+def add_text(text, x_pos, y_pos, font):
+    added_text = font.render(text, True, (0,0,0))
+    screen.blit(added_text, (x_pos, y_pos))
+
 def Menu():
-  screen.blit(background_image, (0, 0)) 
+  screen.blit(background_image, (0, 0))
+  add_text("doodle jump!", 90, 50, title_font)
   avatar.draw()
   avatar.update()
   avatar.MenuJump()
   MenuButtons()
 
 def MenuButtons():
-  # test
   PlayButton.draw()
+  QuitButton.draw()
   if pygame.mouse.get_pressed()[0]:
-    MousePos = pygame.mouse.get_pos()
-    if PlayButton.IsPressed(MousePos):
-      print("Pressed")
+      MousePos = pygame.mouse.get_pos()
+      if PlayButton.IsPressed(MousePos):
+        Mode = GameStage.Play
+      if QuitButton.IsPressed(MousePos):
+        running = False
 
-
-PlayButton = buttons(pygame.transform.scale(pygame.image.load("Assets/blue empty button.jpeg"), (200, 50)), screen_width/2 - 150, screen_height/2 - 125)
+PlayButton = buttons(pygame.transform.scale(pygame.image.load("Assets/play button image.png"), (250, 70)), screen_width/2 - 120, screen_height/2 - 205)
+QuitButton = buttons(pygame.transform.scale(pygame.image.load("Assets/quit button image.png"), (250, 70)), screen_width/2 - 120, screen_height/2 - 100)
 
 def mainloop():
   running = True
@@ -92,7 +107,13 @@ def mainloop():
       if event.type == pygame.QUIT:
         running = False
     
-    Menu()
+    match Mode:
+      case GameStage.Menu:
+        Menu()
+      case GameStage.Play:
+        Menu()
+      case _:
+        Menu()
     
     Clock.tick(FPS)
     pygame.display.update()
